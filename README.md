@@ -1,2 +1,8 @@
-# tallerllinux
-Trabajos del Taller Linux Julio 2026
+# Taller Linux
+
+Trabajos realizados con ansible durante el taller
+
+##Contenido
+
+- Inventario
+- Playbooks
