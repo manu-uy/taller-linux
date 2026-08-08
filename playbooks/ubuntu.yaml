@@ -51,14 +51,34 @@
       community.mysql.mysql_query:
         login_db: "{{ DB_DBASE }}"
         login_unix_socket: /run/mysqld/mysqld.sock
-        query: |
-          INSERT INTO cumpleaños (nombre, fecha)
-          SELECT 'JUAN', '1990-03-15'
-          WHERE NOT EXISTS (
-          SELECT 1
-          FROM cumpleaños
-          WHERE nombre = 'JUAN' and fecha = '1990-03-15'
-          );
+        query:
+          - |
+            INSERT INTO cumpleaños (nombre, fecha)
+            SELECT 'Frodo Baggins', '2005-01-14'
+            WHERE NOT EXISTS (
+              SELECT 1
+              FROM cumpleaños
+              WHERE nombre = 'Frodo Baggins'
+                AND fecha = '2005-01-14'
+            );
+          - |
+            INSERT INTO cumpleaños (nombre, fecha)
+            SELECT 'Aragorn', '2004-02-09'
+            WHERE NOT EXISTS (
+              SELECT 1
+              FROM cumpleaños
+              WHERE nombre = 'Aragorn'
+                AND fecha = '2004-02-09'
+            );
+          - |
+            INSERT INTO cumpleaños (nombre, fecha)
+            SELECT 'Arwen Undomiel', '1994-12-09'
+            WHERE NOT EXISTS (
+              SELECT 1
+              FROM cumpleaños
+              WHERE nombre = 'Arwen Undomiel'
+                AND fecha = '1994-12-09'
+            );
 
     - name: Crear usuario de la app
       community.mysql.mysql_user:
