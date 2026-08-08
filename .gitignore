@@ -1,0 +1,16 @@
+# Ansible
+*.retry
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.pyc
+
+# Ansible Vault passwords
+.vault_password
+vault_password
+vault-password.txt

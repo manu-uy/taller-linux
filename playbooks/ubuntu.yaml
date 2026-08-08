@@ -1,0 +1,85 @@
+---
+- name: Instalar MariaDB
+  hosts: ubuntu01
+  become: true
+  vars_files:
+    - ../vars/database.yaml
+
+  tasks:
+
+    - name: Instalar MariaDB
+      ansible.builtin.apt:
+        name: mariadb-server
+        state: present
+
+    - name: Instalar dependencias para Ansible MariaDB
+      ansible.builtin.apt:
+        name: python3-pymysql
+        state: present
+        
+    - name: Asociar MariaDB a cualquier interfaz
+      ansible.builtin.lineinfile:
+        path: /etc/mysql/mariadb.conf.d/50-server.cnf
+        regexp: '^bind-address'
+        line: 'bind-address = 0.0.0.0'
+      notify: Reiniciar mariadb server
+
+    - name: Iniciar MariaDB
+      ansible.builtin.systemd_service:
+        name: mariadb
+        state: started
+        enabled: true
+
+    - name: Crear base de datos
+      community.mysql.mysql_db:
+        name: "{{ DB_DBASE }}"
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - name: Crear tabla de cumpleaños
+      community.mysql.mysql_query:
+        login_db: "{{ DB_DBASE }}"
+        login_unix_socket: /run/mysqld/mysqld.sock
+        query: |
+          CREATE TABLE IF NOT EXISTS cumpleaños (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          nombre VARCHAR(100) NOT NULL,
+          fecha DATE NOT NULL
+          );
+
+    - name: Insertar datos iniciales
+      community.mysql.mysql_query:
+        login_db: "{{ DB_DBASE }}"
+        login_unix_socket: /run/mysqld/mysqld.sock
+        query: |
+          INSERT INTO cumpleaños (nombre, fecha)
+          SELECT 'JUAN', '1990-03-15'
+          WHERE NOT EXISTS (
+          SELECT 1
+          FROM cumpleaños
+          WHERE nombre = 'JUAN' and fecha = '1990-03-15'
+          );
+
+    - name: Crear usuario de la app
+      community.mysql.mysql_user:
+        name: "{{ DB_USER }}"
+        host: "10.0.2.15"
+        password: "{{ DB_PASS }}"
+        priv: "{{ DB_DBASE }}.*:SELECT,INSERT,UPDATE,DELETE"
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+
+    - name: Permitir connecciones a la BD en UFW
+      community.general.ufw:
+        port: 3306
+        proto: tcp
+        rule: allow
+        from_ip: 10.0.2.15
+
+  handlers:
+
+    - name: Reiniciar mariadb server
+      ansible.builtin.systemd_service:
+        name: mariadb
+        state: restarted
