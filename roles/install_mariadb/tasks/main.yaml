@@ -1,13 +1,11 @@
 ---
-- name: Instalar MariaDB y dependencias de Python
+- name: Instalar MariaDB y dependencias para Ansible
   ansible.builtin.apt:
-    name:
-      - mariadb-server
-      - python3-pymysql
+    name: "{{ packages }}"
     state: present
     update_cache: true
 
-- name: Asociar MariaDB a todas las interfaces
+- name: Configurar MariaDB para aceptar conexiones remotas
   ansible.builtin.lineinfile:
     path: /etc/mysql/mariadb.conf.d/50-server.cnf
     regexp: '^\s*bind-address\s*='
@@ -15,15 +13,15 @@
     state: present
   notify: Reiniciar MariaDB
 
-- name: Asegurar que MariaDB este iniciado
+- name: Asegurar que MariaDB este iniciado y habilitado
   ansible.builtin.systemd_service:
     name: mariadb
     state: started
     enabled: true
 
-- name: Permitir conexiones a MariaDB desde el servidor de aplicacion
+- name: Permitir MariaDB solamente desde el servidor de aplicacion
   community.general.ufw:
     rule: allow
     port: "3306"
     proto: tcp
-    from_ip: "10.0.2.15"
+    from_ip: "{{ app_server_ip }}"

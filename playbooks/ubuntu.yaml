@@ -41,7 +41,7 @@
         login_db: "{{ DB_DBASE }}"
         login_unix_socket: /run/mysqld/mysqld.sock
         query: |
-          CREATE TABLE IF NOT EXISTS cumpleaños (
+          CREATE TABLE IF NOT EXISTS cumpleanios (
           id INT AUTO_INCREMENT PRIMARY KEY,
           nombre VARCHAR(100) NOT NULL,
           fecha DATE NOT NULL
@@ -53,29 +53,29 @@
         login_unix_socket: /run/mysqld/mysqld.sock
         query:
           - |
-            INSERT INTO cumpleaños (nombre, fecha)
+            INSERT INTO cumpleanios (nombre, fecha)
             SELECT 'Frodo Baggins', '2005-01-14'
             WHERE NOT EXISTS (
               SELECT 1
-              FROM cumpleaños
+              FROM cumpleanios
               WHERE nombre = 'Frodo Baggins'
                 AND fecha = '2005-01-14'
             );
           - |
-            INSERT INTO cumpleaños (nombre, fecha)
+            INSERT INTO cumpleanios (nombre, fecha)
             SELECT 'Aragorn', '2004-02-09'
             WHERE NOT EXISTS (
               SELECT 1
-              FROM cumpleaños
+              FROM cumpleanios
               WHERE nombre = 'Aragorn'
                 AND fecha = '2004-02-09'
             );
           - |
-            INSERT INTO cumpleaños (nombre, fecha)
+            INSERT INTO cumpleanios (nombre, fecha)
             SELECT 'Arwen Undomiel', '1994-12-09'
             WHERE NOT EXISTS (
               SELECT 1
-              FROM cumpleaños
+              FROM cumpleanios
               WHERE nombre = 'Arwen Undomiel'
                 AND fecha = '1994-12-09'
             );

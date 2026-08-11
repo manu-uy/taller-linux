@@ -1,9 +1,11 @@
 ---
-- name: Instalar apache, PHP, PHP-FPM y firewalld
-  hosts: centos
+- name: Configurar servidor web
+  hosts: centos01
   become: true
+
   vars_files:
     - ../vars/database.yaml
+
   vars:
     packages:
       - httpd
@@ -11,44 +13,49 @@
       - php-fpm
       - php-mysqlnd
       - python3-libsemanage
-    services:
-      - httpd
-      - php-fpm
 
   tasks:
 
-    - name: Instalar apache, php, php-fpm, php-mysql
+    - name: Instalar Apache, PHP y dependencias
       ansible.builtin.dnf:
         name: "{{ packages }}"
         state: present
 
-    - name: Habilitar e iniciar servicios
+    - name: Asegurar que Apache este iniciado y habilitado
       ansible.builtin.systemd_service:
-        name: "{{ item }}"
+        name: httpd
         state: started
         enabled: true
-      loop: "{{ services }}"    
 
-    - name: Habilitar http en firewall
+    - name: Asegurar que PHP-FPM este iniciado y habilitado
+      ansible.builtin.systemd_service:
+        name: php-fpm
+        state: started
+        enabled: true
+
+    - name: Permitir HTTP en firewalld
       ansible.posix.firewalld:
         service: http
         state: enabled
         permanent: true
         immediate: true
 
-    - name: Instalar php app
+    - name: Desplegar aplicacion PHP
       ansible.builtin.template:
         src: ../templates/cumple.j2
         dest: /var/www/html/index.php
-        mode: '0644'
         owner: apache
         group: apache
+        mode: "0644"
 
-    - name: Modificar booleans para el acceso desde apache a la DB
+    - name: Permitir conexiones de Apache hacia la red
       ansible.posix.seboolean:
-        name: "{{ item }}"
+        name: httpd_can_network_connect
         state: true
         persistent: true
-      loop:
-        - httpd_can_network_connect
-        - httpd_can_network_connect_db
+
+    - name: Permitir conexiones de Apache hacia la base de datos
+      ansible.posix.seboolean:
+        name: httpd_can_network_connect_db
+        state: true
+        persistent: true

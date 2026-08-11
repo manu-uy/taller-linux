@@ -1,5 +1,5 @@
 ---
-- name: Instalar y configurar MariaDB
+- name: Configurar servidor de base de datos
   hosts: ubuntu01
   become: true
 
@@ -12,55 +12,73 @@
   tasks:
 
     - name: Crear base de datos
-      ansible.mysql.mysql_db:
+      community.mysql.mysql_db:
         name: "{{ DB_DBASE }}"
         state: present
         login_user: root
         login_password: "{{ DB_ROOT_PW }}"
         login_unix_socket: /run/mysqld/mysqld.sock
-        config_file: ""
 
-    - name: Crear tabla cumpleanios
-      ansible.mysql.mysql_query:
+    - name: Crear tabla de cumpleaños
+      community.mysql.mysql_query:
+        login_db: "{{ DB_DBASE }}"
         login_user: root
         login_password: "{{ DB_ROOT_PW }}"
-        login_db: "{{ DB_DBASE }}"
         login_unix_socket: /run/mysqld/mysqld.sock
-        config_file: ""
         query: |
           CREATE TABLE IF NOT EXISTS cumpleanios (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            fecha DATE NOT NULL,
-            UNIQUE KEY unique_cumpleanios (nombre, fecha)
+            nombre VARCHAR(100),
+            fecha DATE
           );
+        config_file: ""
       changed_when: false
 
-    - name: Cargar datos iniciales
-      ansible.mysql.mysql_query:
+    - name: Insertar datos iniciales
+      community.mysql.mysql_query:
+        login_db: "{{ DB_DBASE }}"
         login_user: root
         login_password: "{{ DB_ROOT_PW }}"
-        login_db: "{{ DB_DBASE }}"
         login_unix_socket: /run/mysqld/mysqld.sock
-        config_file: ""
-        query: |
-          INSERT IGNORE INTO cumpleanios (nombre, fecha)
-          VALUES
-            ('Frodo Baggins', '2005-01-14'),
-            ('Aragorn', '2004-02-09'),
-            ('Arwen Undomiel', '1995-12-09');
-      register: insert_result
-      changed_when: insert_result.rowcount[0] > 0
+        query:
+          - |
+            INSERT INTO cumpleanios (nombre, fecha)
+            SELECT 'Frodo Baggins', '2005-01-14'
+            WHERE NOT EXISTS (
+              SELECT 1
+              FROM cumpleanios
+              WHERE nombre = 'Frodo Baggins'
+                AND fecha = '2005-01-14'
+            );
+          - |
+            INSERT INTO cumpleanios (nombre, fecha)
+            SELECT 'Aragorn', '2004-02-09'
+            WHERE NOT EXISTS (
+              SELECT 1
+              FROM cumpleanios
+              WHERE nombre = 'Aragorn'
+                AND fecha = '2004-02-09'
+            );
+          - |
+            INSERT INTO cumpleanios (nombre, fecha)
+            SELECT 'Arwen Undomiel', '1994-12-09'
+            WHERE NOT EXISTS (
+              SELECT 1
+              FROM cumpleanios
+              WHERE nombre = 'Arwen Undomiel'
+                AND fecha = '1994-12-09'
+            );
+      register: datos_iniciales
+      changed_when: >
+        datos_iniciales.rowcount | map('int') | sum > 0
 
     - name: Crear usuario de la aplicacion
-      ansible.mysql.mysql_user:
-        login_user: root
-        login_password: "{{ DB_ROOT_PW }}"
-        login_unix_socket: /run/mysqld/mysqld.sock
-        config_file: ""
+      community.mysql.mysql_user:
         name: "{{ DB_USER }}"
-        host: "%"
+        host: "{{ app_server_ip }}"
         password: "{{ DB_PASS }}"
         priv: "{{ DB_DBASE }}.*:SELECT,INSERT,UPDATE,DELETE"
         state: present
-
+        login_user: root
+        login_password: "{{ DB_ROOT_PW }}"
+        login_unix_socket: /run/mysqld/mysqld.sock
