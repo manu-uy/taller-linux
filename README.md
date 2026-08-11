@@ -90,7 +90,6 @@ playbooks/site.yaml
 Este playbook ejecuta:
 
 ```text
-hardening.yaml
 ubuntu.yaml
 centos.yaml
 ```
@@ -228,9 +227,9 @@ También puede accederse desde un navegador utilizando la IP del servidor CentOS
 
 La aplicación muestra los datos almacenados en MariaDB, confirmando que la conexión entre ambos servidores funciona correctamente.
 
-##+------------------------------------------------------------------+
-##|  ESTRUCTURA                                                     |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  ESTRUCTURA                                                      |
+## +------------------------------------------------------------------+
 
 ```text
 taller-linux/
