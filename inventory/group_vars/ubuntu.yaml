@@ -1,2 +1,2 @@
 ---
-app_server_ip: 10.0.2.15
+app_server_ip: "{{ hostvars['centos01']['ansible_host'] }}"

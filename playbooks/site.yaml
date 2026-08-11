@@ -1,3 +1,4 @@
 ---
+- import_playbook: hardening.yaml
 - import_playbook: ubuntu.yaml
 - import_playbook: centos.yaml

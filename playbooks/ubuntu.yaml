@@ -1,57 +1,55 @@
 ---
-- name: Instalar MariaDB
+- name: Configurar servidor de base de datos
   hosts: ubuntu01
   become: true
+
   vars_files:
     - ../vars/database.yaml
 
+  roles:
+    - install_mariadb
+
   tasks:
-
-    - name: Instalar MariaDB
-      ansible.builtin.apt:
-        name: mariadb-server
-        state: present
-
-    - name: Instalar dependencias para Ansible MariaDB
-      ansible.builtin.apt:
-        name: python3-pymysql
-        state: present
-        
-    - name: Asociar MariaDB a cualquier interfaz
-      ansible.builtin.lineinfile:
-        path: /etc/mysql/mariadb.conf.d/50-server.cnf
-        regexp: '^bind-address'
-        line: 'bind-address = 0.0.0.0'
-      notify: Reiniciar mariadb server
-
-    - name: Iniciar MariaDB
-      ansible.builtin.systemd_service:
-        name: mariadb
-        state: started
-        enabled: true
 
     - name: Crear base de datos
       community.mysql.mysql_db:
         name: "{{ DB_DBASE }}"
         state: present
+        login_user: root
+        login_password: "{{ DB_ROOT_PW }}"
         login_unix_socket: /run/mysqld/mysqld.sock
 
     - name: Crear tabla de cumpleaños
       community.mysql.mysql_query:
         login_db: "{{ DB_DBASE }}"
+        login_user: root
+        login_password: "{{ DB_ROOT_PW }}"
         login_unix_socket: /run/mysqld/mysqld.sock
         query: |
           CREATE TABLE IF NOT EXISTS cumpleanios (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          nombre VARCHAR(100) NOT NULL,
-          fecha DATE NOT NULL
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nombre VARCHAR(100),
+            fecha DATE
           );
+        config_file: ""
+      changed_when: false
 
-    - name: Insertar datos iniciales
+    - name: Ajustar datos iniciales
       community.mysql.mysql_query:
         login_db: "{{ DB_DBASE }}"
+        login_user: root
+        login_password: "{{ DB_ROOT_PW }}"
         login_unix_socket: /run/mysqld/mysqld.sock
         query:
+          - |
+            DELETE FROM cumpleanios
+            WHERE NOT (
+              (nombre = 'Frodo Baggins' AND fecha = '2005-01-14')
+              OR
+              (nombre = 'Aragorn' AND fecha = '2004-02-09')
+              OR
+              (nombre = 'Arwen Undomiel' AND fecha = '1994-12-09')
+            );
           - |
             INSERT INTO cumpleanios (nombre, fecha)
             SELECT 'Frodo Baggins', '2005-01-14'
@@ -79,46 +77,17 @@
               WHERE nombre = 'Arwen Undomiel'
                 AND fecha = '1994-12-09'
             );
+      register: datos_iniciales
+      changed_when: >
+        datos_iniciales.rowcount | map('int') | sum > 0
 
-    - name: Crear usuario de la app
+    - name: Crear usuario de la aplicacion
       community.mysql.mysql_user:
         name: "{{ DB_USER }}"
-        host: "10.0.2.15"
+        host: "{{ app_server_ip }}"
         password: "{{ DB_PASS }}"
         priv: "{{ DB_DBASE }}.*:SELECT,INSERT,UPDATE,DELETE"
         state: present
-        login_unix_socket: /run/mysqld/mysqld.sock
-
-    - name: Checkear si la contrasena de root existe
-      ansible.mysql.mysql_user:
         login_user: root
-        login_password: ""
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-        check_implicit_admin: true
-        name: root
-        host: localhost
-      register: mysql_root_check
-      ignore_error: true
-
-    - name: Debug password status
-      ansible.builtin.debug:
-        msg: mysql_root_check
-      when: mysql_root_check.failed is false
-
-    - name: Iniciar contrasena de root si no esta configurada
-      include_tasks: ../tasks/initialize_root.yaml
-      when: mysql_root_check.failed is false
-
-    - name: Permitir connecciones a la BD en UFW
-      community.general.ufw:
-        port: 3306
-        proto: tcp
-        rule: allow
-        from_ip: 10.0.2.15
-
-  handlers:
-
-    - name: Reiniciar mariadb server
-      ansible.builtin.systemd_service:
-        name: mariadb
-        state: restarted
+        login_password: "{{ DB_ROOT_PW }}"
+        login_unix_socket: /run/mysqld/mysqld.sock
