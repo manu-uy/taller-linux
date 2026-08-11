@@ -2,8 +2,8 @@
 
 ```text
 +------------------------------------------------------------------+
-|  TALLER LINUX :: AUTOMATIZACION CON ANSIBLE                    |
-|  Ignacio Ortega - Manuel Vazquez                                |
+|  TALLER LINUX :: AUTOMATIZACION CON ANSIBLE                      |
+|  Ignacio Ortega - Manuel Vazquez                                 |
 +------------------------------------------------------------------+
 ```
 
@@ -20,9 +20,9 @@ La aplicación utilizada es la proporcionada para el obligatorio:
 
 https://github.com/emverdes/dbappphp
 
-##+------------------------------------------------------------------+
-##|  ARQUITECTURA                                                  |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  ARQUITECTURA                                                  |
+## +------------------------------------------------------------------+
 
 ```text
                  HTTP
@@ -49,9 +49,9 @@ En nuestro entorno utilizamos:
 | CentOS01 | 10.0.2.15  | Aplicación web |
 | Ubuntu01 | 10.0.2.100 | MariaDB        |
 
-##+------------------------------------------------------------------+
-##|  INVENTARIO                                                    |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  INVENTARIO                                                    |
+## +------------------------------------------------------------------+
 
 El inventario se encuentra en:
 
@@ -77,9 +77,9 @@ ubuntu
 
 Las demás configuraciones utilizan variables de Ansible y no requieren modificar los playbooks por cambio de IP.
 
-##+------------------------------------------------------------------+
-##|  PLAYBOOKS                                                      |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  PLAYBOOKS                                                      |
+## +------------------------------------------------------------------+
 
 El despliegue completo se realiza desde:
 
@@ -90,7 +90,6 @@ playbooks/site.yaml
 Este playbook ejecuta:
 
 ```text
-hardening.yaml
 ubuntu.yaml
 centos.yaml
 ```
@@ -103,9 +102,9 @@ roles/install_mariadb/
 
 De esta forma las tareas de instalación y configuración de MariaDB quedan separadas del playbook principal.
 
-##+------------------------------------------------------------------+
-##|  QUE AUTOMATIZAMOS                                             |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  QUE AUTOMATIZAMOS                                             |
+## +------------------------------------------------------------------+
 
 ### CentOS
 
@@ -139,9 +138,9 @@ y se instala como:
 * Creación del usuario de la aplicación.
 * Configuración de UFW para permitir MariaDB solamente desde CentOS.
 
-##+------------------------------------------------------------------+
-##|  BASE DE DATOS                                                 |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  BASE DE DATOS                                                 |
+## +------------------------------------------------------------------+
 
 La aplicación utiliza:
 
@@ -163,9 +162,9 @@ vars/database.yaml
 
 No se almacenan contraseñas reales en texto plano en Git.
 
-##+------------------------------------------------------------------+
-##|  COLECCIONES                                                   |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  COLECCIONES                                                   |
+## +------------------------------------------------------------------+
 
 Las colecciones requeridas están definidas en:
 
@@ -179,9 +178,9 @@ Para instalarlas:
 ansible-galaxy collection install -r collections/requirements.yaml
 ```
 
-##+------------------------------------------------------------------+
-##|  EJECUCION                                                     |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  EJECUCION                                                     |
+## +------------------------------------------------------------------+
 
 Una vez configurado el inventario:
 
@@ -199,9 +198,9 @@ ansible-playbook -i inventory/hosts.ini playbooks/site.yaml \
   --ask-vault-pass
 ```
 
-##+------------------------------------------------------------------+
-##|  IDEMPOTENCIA                                                   |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  IDEMPOTENCIA                                                   |
+## +------------------------------------------------------------------+
 
 Probamos una segunda ejecución del playbook completo.
 
@@ -214,9 +213,9 @@ failed=0
 
 También comprobamos que los registros de la tabla no se duplicaran.
 
-##+------------------------------------------------------------------+
-##|  COMPROBACION                                                   |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  COMPROBACION                                                   |
+## +------------------------------------------------------------------+
 
 La aplicación puede comprobarse desde CentOS mediante:
 
@@ -228,9 +227,9 @@ También puede accederse desde un navegador utilizando la IP del servidor CentOS
 
 La aplicación muestra los datos almacenados en MariaDB, confirmando que la conexión entre ambos servidores funciona correctamente.
 
-##+------------------------------------------------------------------+
-##|  ESTRUCTURA                                                     |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  ESTRUCTURA                                                      |
+## +------------------------------------------------------------------+
 
 ```text
 taller-linux/
@@ -257,9 +256,9 @@ taller-linux/
 └── README.md
 ```
 
-##+------------------------------------------------------------------+
-##|  RESULTADO                                                     |
-##+------------------------------------------------------------------+
+## +------------------------------------------------------------------+
+## |  RESULTADO                                                     |
+## +------------------------------------------------------------------+
 
 Al finalizar el despliegue:
 
@@ -271,8 +270,6 @@ Al finalizar el despliegue:
 * Las credenciales se mantienen protegidas mediante Ansible Vault.
 * El despliegue es idempotente.
 * El proyecto completo puede ejecutarse mediante `site.yaml`.
-
-El proyecto fue realizado por:
 
 ```text
 +------------------------------------------------------------------+
