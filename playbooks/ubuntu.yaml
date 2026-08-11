@@ -89,6 +89,25 @@
         state: present
         login_unix_socket: /run/mysqld/mysqld.sock
 
+    - name: Checkear si la contrasena de root existe
+      ansible.mysql.mysql_user:
+        login_user: root
+        login_password: ""
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        check_implicit_admin: true
+        name: root
+        host: localhost
+      register: mysql_root_check
+      ignore_error: true
+
+    - name: Debug password status
+      ansible.builtin.debug:
+        msg: mysql_root_check
+      when: mysql_root_check.failed is false
+
+    - name: Iniciar contrasena de root si no esta configurada
+      include_tasks: ../tasks/initialize_root.yaml
+      when: mysql_root_check.failed is false
 
     - name: Permitir connecciones a la BD en UFW
       community.general.ufw:
