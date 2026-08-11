@@ -59,3 +59,17 @@
         name: httpd_can_network_connect_db
         state: true
         persistent: true
+
+    - name: Comprobar disponibilidad de MariaDB
+      ansible.builtin.wait_for:
+        host: "{{ DB_SERVER }}"
+        port: 3306
+        timeout: 5
+      register: mariadb_check
+
+    - name: Validar disponibilidad de MariaDB
+      ansible.builtin.assert:
+        that:
+          - mariadb_check.failed is not defined or not mariadb_check.failed
+        success_msg: "OK: MariaDB está disponible en {{ DB_SERVER }}:3306"
+        fail_msg: "ERROR: No se puede acceder a MariaDB en {{ DB_SERVER }}:3306"
