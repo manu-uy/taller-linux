@@ -2,8 +2,8 @@
 
 ```text
 +------------------------------------------------------------------+
-|  TALLER LINUX :: AUTOMATIZACION CON ANSIBLE                    |
-|  Ignacio Ortega - Manuel Vazquez                                |
+|  TALLER LINUX :: AUTOMATIZACION CON ANSIBLE                      |
+|  Ignacio Ortega - Manuel Vazquez                                 |
 +------------------------------------------------------------------+
 ```
 
