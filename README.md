@@ -271,6 +271,17 @@ Al finalizar el despliegue:
 * El despliegue es idempotente.
 * El proyecto completo puede ejecutarse mediante `site.yaml`.
 
+
+# DEFENSA
+## Modificación adicional:
+### Generar una tarea en la configuracion del servidor web que compruebe que el servidor de B.D. esta disponible
+
+![Configuración de la tarea](capturas/comprobacion de estado de DB server.png)
+
+![Tarea funcionando](capturas/mensaje de que DB server esta online.png)
+
+
+
 ```text
 +------------------------------------------------------------------+
 |                  TALLER DE SERVIDORES LINUX                      |
