@@ -17,10 +17,6 @@
         name: ufw
         state: present
 
-    - name: Reset UFW to default      
-      community.general.ufw:
-        state: reset
-
     - name: Define outgoing connection policy
       community.general.ufw:
         direction: outgoing

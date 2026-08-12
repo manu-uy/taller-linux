@@ -1,3 +1,7 @@
 ---
+- import_playbook: hardening.yaml
+  when: "'ubuntu' in group_names"
+
 - import_playbook: ubuntu.yaml
+
 - import_playbook: centos.yaml
