@@ -276,10 +276,9 @@ Al finalizar el despliegue:
 ## Modificación adicional:
 ### Generar una tarea en la configuracion del servidor web que compruebe que el servidor de B.D. esta disponible
 
-![Configuración de la tarea](capturas/comprobacion de estado de DB server.png)
+<img width="684" height="252" alt="comprobacion de estado de DB server" src="https://github.com/user-attachments/assets/3504df0c-e838-4c63-844f-2b132531985f" />
 
-![Tarea funcionando](capturas/mensaje de que DB server esta online.png)
-
+<img width="1026" height="248" alt="mensaje de que DB server esta online" src="https://github.com/user-attachments/assets/8df69bea-a821-4424-9c45-a8b6349e1751" />
 
 
 ```text
