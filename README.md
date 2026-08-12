@@ -274,11 +274,15 @@ Al finalizar el despliegue:
 
 # DEFENSA
 ## Modificación adicional:
-### Generar una tarea en la configuracion del servidor web que compruebe que el servidor de B.D. esta disponible
+### 1. Manuel Vazquez: Generar una tarea en la configuracion del servidor web que compruebe que el servidor de B.D. esta disponible
 
 <img width="684" height="252" alt="comprobacion de estado de DB server" src="https://github.com/user-attachments/assets/3504df0c-e838-4c63-844f-2b132531985f" />
 
 <img width="1026" height="248" alt="mensaje de que DB server esta online" src="https://github.com/user-attachments/assets/8df69bea-a821-4424-9c45-a8b6349e1751" />
+
+### 2. Ignacio Ortega: Cambio en configuracion de sites.yaml para que el hardening se corra si la máquina Ubuntu
+
+<img width="314" height="139" alt="Screenshot 2026-08-11 211402" src="https://github.com/user-attachments/assets/f263f33c-4a40-4c80-be50-00be2f7b34da" />
 
 
 ```text
